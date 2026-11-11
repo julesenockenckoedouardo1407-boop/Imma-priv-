@@ -2,78 +2,69 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#16090e">
-  <meta name="description" content="IMMA PRIVÉ — un espace social réservé aux adultes, fondé sur le respect et le consentement.">
-  <title>IMMA PRIVÉ — Ton univers, tes secrets</title>
+  <meta name="description" content="IMMA PRIVÉ — communauté adulte fondée sur le respect et le consentement.">
+  <title>IMMA PRIVÉ</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="IMMA Privé, accueil">
-      <span class="lips" aria-hidden="true">◡</span><span>IMMA <b>PRIVÉ</b></span>
-    </a>
-    <span class="adult-tag">18+ · ESPACE ADULTE</span>
-  </header>
+<header class="topbar">
+  <a class="brand" href="#"><span class="lips">♡</span><span>IMMA <b>PRIVÉ</b></span></a>
+  <span class="adult-tag">18+ · ESPACE ADULTE</span>
+</header>
 
-  <main>
-    <section id="welcome" class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">UN ESPACE QUI VOUS RESSEMBLE</p>
-        <h1>Le mystère a<br><em>son espace.</em></h1>
-        <p class="lead">Rencontres, échanges et confidences dans une communauté adulte où le respect et le consentement passent avant tout.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" id="go-register">Créer mon compte</button>
-          <button class="btn btn-ghost" id="go-login">Se connecter</button>
-        </div>
-        <p class="fineprint">Réservé aux personnes de 18 ans et plus. L'accès communautaire nécessite une validation du compte.</p>
+<main>
+  <section id="welcome" class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">UN ESPACE QUI VOUS RESSEMBLE</p>
+      <h1>Le mystère a<br><em>son espace.</em></h1>
+      <p class="lead">Rencontres, échanges et confidences dans une communauté adulte où le respect et le consentement passent avant tout.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="go-register">Créer mon compte</button>
+        <button class="btn btn-ghost" id="go-login">Se connecter</button>
       </div>
-      <div class="hero-art" aria-label="Logo décoratif IMMA Privé">
-        <div class="halo"></div>
-        <div class="seal"><span class="seal-lips">❧</span><span class="seal-name">IMMA</span><span class="seal-sub">PRIVÉ</span></div>
-        <div class="art-caption">TON UNIVERS · TES DÉSIRS · TES SECRETS</div>
-      </div>
-    </section>
+      <p class="fineprint">Réservé aux personnes de 18 ans et plus. Les nouveaux comptes doivent être validés avant l'accès à la communauté.</p>
+    </div>
+    <div class="hero-art"><div class="halo"></div><div class="seal"><span class="seal-lips">♡</span><span class="seal-name">IMMA</span><span class="seal-sub">PRIVÉ</span></div><div class="art-caption">TON UNIVERS · TES SECRETS</div></div>
+  </section>
 
-    <section class="feature-strip" aria-label="Fonctionnalités">
-      <article><span>♡</span><h3>Rencontres</h3><p>Faites connaissance à votre rythme.</p></article>
-      <article><span>✉</span><h3>Messagerie</h3><p>Échangez dans un espace privé.</p></article>
-      <article><span>✧</span><h3>Communauté</h3><p>Partagez dans le respect des autres.</p></article>
-      <article><span>♧</span><h3>Espace couple</h3><p>Des idées complices pour adultes.</p></article>
-    </section>
+  <section id="auth-panel" class="auth-panel hidden">
+    <button class="close-panel" id="close-panel" aria-label="Fermer">×</button>
+    <p class="eyebrow">BIENVENUE CHEZ IMMA</p>
+    <h2 id="form-title">Créer un compte</h2>
+    <p class="muted" id="form-subtitle">Rejoignez la communauté en quelques étapes.</p>
+    <form id="auth-form">
+      <label id="name-wrap">Nom d'utilisateur<input id="username" minlength="3" maxlength="24" placeholder="Ex. ImmaRose" autocomplete="nickname"></label>
+      <label>Adresse e-mail<input id="email" type="email" required placeholder="vous@exemple.com" autocomplete="email"></label>
+      <label>Mot de passe<input id="password" type="password" required minlength="8" placeholder="8 caractères minimum" autocomplete="current-password"></label>
+      <label id="confirm-wrap">Confirmer le mot de passe<input id="confirm-password" type="password" minlength="8" placeholder="Répétez le mot de passe"></label>
+      <label id="age-wrap" class="check-row"><input id="age-check" type="checkbox"> Je confirme avoir 18 ans ou plus.</label>
+      <label id="rules-wrap" class="check-row"><input id="rules-check" type="checkbox"> J'accepte les règles de respect, de confidentialité et de consentement.</label>
+      <button class="btn btn-primary full" id="submit-auth" type="submit">Créer mon compte</button>
+      <p class="form-switch" id="form-switch">Déjà membre ? <button type="button" id="switch-mode">Se connecter</button></p>
+      <p id="form-notice" class="notice" role="status"></p>
+    </form>
+  </section>
 
-    <section id="auth-panel" class="auth-panel hidden">
-      <div class="panel-heading">
-        <p class="eyebrow">BIENVENUE CHEZ IMMA</p>
-        <h2 id="form-title">Créer un compte</h2>
-        <p id="form-subtitle">Rejoignez la communauté en quelques étapes.</p>
-      </div>
-      <form id="auth-form">
-        <label id="name-wrap">Nom d'utilisateur<input id="username" name="username" minlength="3" maxlength="24" placeholder="Ex. ImmaRose" autocomplete="nickname"></label>
-        <label>Adresse e-mail<input id="email" name="email" type="email" required placeholder="vous@exemple.com" autocomplete="email"></label>
-        <label>Mot de passe<input id="password" name="password" type="password" required minlength="8" placeholder="8 caractères minimum" autocomplete="new-password"></label>
-        <label id="confirm-wrap">Confirmer le mot de passe<input id="confirm-password" type="password" minlength="8" placeholder="Répétez le mot de passe" autocomplete="new-password"></label>
-        <label id="age-wrap" class="check-row"><input id="age-check" type="checkbox"> Je confirme avoir 18 ans ou plus.</label>
-        <label id="rules-wrap" class="check-row"><input id="rules-check" type="checkbox"> J'accepte les règles de respect, de confidentialité et de consentement.</label>
-        <button class="btn btn-primary full" type="submit" id="submit-auth">Créer mon compte</button>
-        <p class="form-switch" id="form-switch">Déjà membre ? <button type="button" id="switch-mode">Se connecter</button></p>
-        <p class="notice" id="form-notice" role="status"></p>
-      </form>
-      <button class="close-panel" id="close-panel" aria-label="Fermer">×</button>
-    </section>
+  <section id="member-area" class="member-area hidden">
+    <div class="member-head"><div><p class="eyebrow">ESPACE PERSONNEL</p><h2 id="member-title">Bienvenue</h2></div><button class="btn btn-ghost" id="logout">Déconnexion</button></div>
+    <div id="member-content" class="member-card"></div>
+  </section>
 
-    <section class="safety">
-      <div><p class="eyebrow">NOS ENGAGEMENTS</p><h2>La confiance n'est pas une option.</h2></div>
-      <ul>
-        <li>Comptes soumis à validation avant l'accès communautaire.</li>
-        <li>Respect du consentement et interdiction de partager des images intimes sans autorisation.</li>
-        <li>Outils de blocage et de signalement prévus pour la version connectée.</li>
-        <li>Ne partagez jamais vos mots de passe ni vos informations financières.</li>
-      </ul>
-    </section>
-  </main>
-  <footer><span>© 2026 IMMA PRIVÉ</span><span>Une communauté adulte · Respect · Consentement · Confidentialité</span></footer>
-  <script src="app.js"></script>
+  <section class="features">
+    <article><span>♡</span><h3>Rencontres</h3><p>Faites connaissance à votre rythme.</p></article>
+    <article><span>✉</span><h3>Messagerie</h3><p>Un espace d'échange privé à venir.</p></article>
+    <article><span>✧</span><h3>Communauté</h3><p>Des interactions dans le respect.</p></article>
+    <article><span>♧</span><h3>Espace couple</h3><p>Des idées complices pour adultes.</p></article>
+  </section>
+
+  <section class="safety">
+    <div><p class="eyebrow">NOS ENGAGEMENTS</p><h2>La confiance n'est pas une option.</h2></div>
+    <ul><li>Validation des nouveaux comptes avant l'accès communautaire.</li><li>Consentement obligatoire pour tout contenu intime.</li><li>Interdiction du partage d'images privées sans autorisation.</li><li>Blocage et signalement à intégrer avant le lancement public.</li></ul>
+  </section>
+</main>
+<footer><span>© 2026 IMMA PRIVÉ</span><span>Respect · Consentement · Confidentialité</span></footer>
+<script type="module" src="app.js"></script>
 </body>
 </html>

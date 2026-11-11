@@ -1,97 +1,51 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#170b12">
-  <title>IMMA PRIVÉ — Communauté</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#170b12"><title>IMMA PRIVÉ — Messenger</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#"><span class="lips">♥</span> IMMA <b>PRIVÉ</b></a>
-    <span class="tagline">Le plaisir du mystère, l'élégance de l'intimité.</span>
-    <button id="logoutBtn" class="btn ghost hidden">Déconnexion</button>
-  </header>
+<header class="topbar">
+  <a class="brand" href="#"><span>♥</span> IMMA <b>PRIVÉ</b></a>
+  <div class="topright"><span class="tagline">Ton univers. Tes désirs. Tes secrets.</span><button id="logout" class="btn ghost hidden">Déconnexion</button></div>
+</header>
+<main>
+  <section id="authView" class="auth panel">
+    <p class="eyebrow">MESSAGERIE PRIVÉE</p><h1>Les conversations<br><em>restent entre vous.</em></h1>
+    <p class="muted">Connecte-toi avec ton compte IMMA PRIVÉ validé.</p>
+    <form id="loginForm">
+      <label>Adresse e-mail<input id="email" type="email" required autocomplete="email"></label>
+      <label>Mot de passe<input id="password" type="password" required autocomplete="current-password"></label>
+      <button class="btn primary" type="submit">Se connecter</button>
+      <p id="authMessage" class="message"></p>
+    </form>
+  </section>
 
-  <main>
-    <section id="authView" class="auth-layout">
-      <div class="hero">
-        <p class="eyebrow">UN ESPACE POUR ADULTES</p>
-        <h1>Ton univers.<br><em>Tes désirs. Tes secrets.</em></h1>
-        <p>Une communauté privée, réservée aux personnes majeures et aux membres validés.</p>
-        <div class="badge">18+ · Respect · Consentement · Confidentialité</div>
-      </div>
-      <div class="panel auth-panel">
-        <div class="tabs">
-          <button id="loginTab" class="tab active">Connexion</button>
-          <button id="registerTab" class="tab">Créer un compte</button>
-        </div>
-        <form id="authForm">
-          <label id="nameLabel" class="hidden">Nom d'affichage
-            <input id="displayName" maxlength="40" autocomplete="nickname" placeholder="Ton pseudonyme">
-          </label>
-          <label>Adresse e-mail
-            <input id="email" type="email" required autocomplete="email" placeholder="nom@exemple.com">
-          </label>
-          <label>Mot de passe
-            <input id="password" type="password" required minlength="8" autocomplete="current-password" placeholder="8 caractères minimum">
-          </label>
-          <label id="ageLabel" class="check hidden">
-            <input id="adultCheck" type="checkbox"> Je confirme avoir au moins 18 ans.
-          </label>
-          <button id="authSubmit" class="btn primary" type="submit">Se connecter</button>
-          <p id="authMessage" class="message" aria-live="polite"></p>
-        </form>
-        <p class="small">L'inscription ne donne pas un accès immédiat : chaque compte doit être validé par l'administration.</p>
+  <section id="pendingView" class="panel pending hidden">
+    <p class="eyebrow">ACCÈS MEMBRE</p><h2>Validation nécessaire</h2>
+    <p class="muted">La messagerie est réservée aux membres adultes dont le compte a été validé par l'administration.</p>
+    <button id="pendingLogout" class="btn ghost">Déconnexion</button>
+  </section>
+
+  <section id="chatApp" class="chat-layout hidden">
+    <aside class="panel contacts">
+      <div class="side-head"><div><p class="eyebrow">IMMA MESSENGER</p><h2>Messages</h2></div><span class="online-dot"></span></div>
+      <input id="searchUsers" class="search" placeholder="Rechercher un membre…">
+      <div id="contactList" class="contact-list"><p class="muted tiny">Chargement des membres…</p></div>
+      <p class="privacy-note">Respecte les limites de chacun. Aucun message non désiré, harcèlement ou menace n'est toléré.</p>
+    </aside>
+    <section class="panel conversation">
+      <div id="emptyChat" class="empty"><div class="heart">♥</div><h2>Un espace à deux.</h2><p>Choisis un membre validé pour commencer une conversation privée.</p></div>
+      <div id="activeChat" class="active-chat hidden">
+        <div class="chat-head"><div><p class="eyebrow">CONVERSATION PRIVÉE</p><h2 id="chatName">Membre</h2></div><button id="backContacts" class="btn ghost mobile-only">Membres</button></div>
+        <div id="messages" class="messages"></div>
+        <form id="sendForm" class="send-form"><input id="messageInput" maxlength="2000" placeholder="Écrire un message…" required autocomplete="off"><button class="btn primary" type="submit">Envoyer</button></form>
+        <p class="tiny muted safety">Ne partage pas de données sensibles. Signale tout comportement abusif à l'administration.</p>
       </div>
     </section>
-
-    <section id="appView" class="app-layout hidden">
-      <aside class="sidebar panel">
-        <p class="eyebrow">ESPACE MEMBRE</p>
-        <h2 id="welcomeName">Bienvenue</h2>
-        <span id="memberStatus" class="status"></span>
-        <div class="divider"></div>
-        <label>Mon pseudonyme
-          <input id="profileName" maxlength="40">
-        </label>
-        <label>Ma présentation
-          <textarea id="profileBio" maxlength="240" rows="4" placeholder="Quelques mots sur toi…"></textarea>
-        </label>
-        <button id="saveProfile" class="btn secondary">Enregistrer mon profil</button>
-        <p id="profileMessage" class="message"></p>
-        <p class="small">Ne publie jamais ton adresse, tes coordonnées privées ou des informations permettant de te localiser.</p>
-      </aside>
-
-      <section class="feed-area">
-        <div id="pendingNotice" class="panel notice hidden">
-          <h2>Ton compte est en attente de validation</h2>
-          <p>Tu pourras consulter et publier dans la communauté après approbation de l'administration.</p>
-        </div>
-        <div id="memberArea" class="hidden">
-          <div class="panel composer">
-            <div class="section-title">
-              <div><p class="eyebrow">LA COMMUNAUTÉ</p><h2>Partager un instant</h2></div>
-              <span class="spark">✦</span>
-            </div>
-            <form id="postForm">
-              <textarea id="postText" rows="4" maxlength="1000" placeholder="Exprime-toi avec respect…"></textarea>
-              <div class="composer-foot">
-                <span class="small">1000 caractères maximum · Publication visible aux membres validés</span>
-                <button class="btn primary" type="submit">Publier</button>
-              </div>
-              <p id="postMessage" class="message"></p>
-            </form>
-          </div>
-          <div class="feed-heading"><h2>Fil de la communauté</h2><button id="refreshFeed" class="btn ghost">Actualiser</button></div>
-          <div id="feed" class="feed"></div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <footer>IMMA PRIVÉ · Communauté réservée aux adultes · Le respect est obligatoire.</footer>
-  <script type="module" src="app.js"></script>
-</body>
-</html>
+  </section>
+</main>
+<footer>IMMA PRIVÉ · 18+ · Consentement · Respect · Confidentialité</footer>
+<script type="module" src="app.js"></script>
+</body></html>

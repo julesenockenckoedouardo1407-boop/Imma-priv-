@@ -1,38 +1,33 @@
 <!doctype html>
 <html lang="fr">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#170b12"><title>IMMA PRIVÉ — IMMA FANTASY</title><link rel="stylesheet" href="style.css"></head>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IMMA PRIVÉ — IMMA COUPLE</title><link rel="stylesheet" href="style.css">
+</head>
 <body>
-<header class="topbar"><a class="brand" href="#"><span>♥</span> IMMA <b>PRIVÉ</b></a><div class="top-actions"><span class="tagline">Un espace intime, personnel et confidentiel.</span><button id="logout" class="btn ghost hidden">Déconnexion</button></div></header>
+<header><div class="brand"><span class="lips">💋</span><div><b>IMMA PRIVÉ</b><small>Le plaisir du mystère, l'élégance de l'intimité.</small></div></div><span class="badge">18+ • ESPACE PRIVÉ</span></header>
 <main>
-<section id="loginView" class="panel login">
- <p class="eyebrow">IMMA FANTASY · 18+</p><h1>L'imagination<br><em>en toute liberté.</em></h1>
- <p class="muted">Un carnet privé pour écrire tes pensées, tes envies et tes idées. Tes notes restent personnelles.</p>
- <form id="loginForm"><label>Adresse e-mail<input id="email" type="email" required autocomplete="email"></label><label>Mot de passe<input id="password" type="password" required autocomplete="current-password"></label><button class="btn primary" type="submit">Se connecter</button><p id="loginMsg" class="message"></p></form>
+<section class="hero"><p class="eyebrow">VOTRE ESPACE À DEUX</p><h1>IMMA <em>COUPLE</em></h1><p>Un espace réservé aux couples adultes qui souhaitent partager des idées, renforcer leur complicité et créer de beaux souvenirs, dans le respect mutuel.</p></section>
+<section class="panel" id="gate">
+<h2>Accéder à IMMA COUPLE</h2><p class="muted">Cette maquette présente l'espace. La connexion réelle à deux doit être activée avec Firebase et une validation sécurisée.</p>
+<div class="grid">
+<label>Votre pseudonyme<input id="pseudo" placeholder="Ex. ÉtoileDorée"></label>
+<label>Pseudonyme de votre partenaire<input id="partner" placeholder="Ex. MonCœur"></label>
+</div>
+<label class="check"><input type="checkbox" id="consent"> Nous sommes tous les deux adultes et consentons à utiliser cet espace ensemble.</label>
+<button id="enter">Ouvrir l'espace de démonstration</button><p id="msg" class="message"></p>
 </section>
-<section id="pendingView" class="panel pending hidden"><p class="eyebrow">ACCÈS RÉSERVÉ</p><h2>Validation nécessaire</h2><p class="muted">IMMA FANTASY est réservé aux membres adultes dont le compte a été validé.</p><button id="pendingLogout" class="btn ghost">Déconnexion</button></section>
-<section id="fantasyApp" class="hidden">
- <div class="hero"><div><p class="eyebrow">TON CARNET PERSONNEL</p><h1>IMMA <em>FANTASY</em></h1><p class="muted">Écris pour toi. Choisis ce que tu gardes privé. Tu n'as aucune obligation de partager.</p></div><div class="seal">18+<small>PRIVÉ</small></div></div>
- <div class="workspace">
-  <section class="panel editor">
-   <p class="eyebrow">NOUVELLE NOTE</p><h2>Donne forme à tes pensées</h2>
-   <form id="noteForm">
-    <label>Titre<input id="noteTitle" maxlength="70" placeholder="Un titre pour ta note…" required></label>
-    <label>Catégorie<select id="noteCategory"><option>Rêverie</option><option>Envie de voyage</option><option>Romance</option><option>Moments à deux</option><option>Préférences personnelles</option><option>Autre pensée</option></select></label>
-    <label>Ton texte<textarea id="noteBody" rows="8" maxlength="5000" placeholder="Écris librement, dans le respect de toi-même et des autres…" required></textarea></label>
-    <div class="editor-foot"><span class="tiny muted">Maximum 5 000 caractères · Visible uniquement par toi</span><button class="btn primary" type="submit">Enregistrer dans mon carnet</button></div>
-    <p id="saveMsg" class="message"></p>
-   </form>
-  </section>
-  <section class="panel journal">
-   <div class="journal-head"><div><p class="eyebrow">MES NOTES</p><h2>Mon carnet privé</h2></div><button id="reload" class="btn ghost">Actualiser</button></div>
-   <input id="searchNotes" class="search" placeholder="Rechercher dans mes notes…">
-   <div id="notesList" class="notes"><p class="muted tiny">Chargement de ton carnet…</p></div>
-  </section>
- </div>
- <section class="privacy panel"><span class="lock">♢</span><div><h3>Ton intimité t'appartient.</h3><p>Les notes sont privées et accessibles uniquement depuis ton compte. Ne rédige pas de contenu concernant une autre personne sans son consentement. Ne stocke pas d'informations sensibles ou de données permettant de localiser quelqu'un.</p></div></section>
+<section class="workspace hidden" id="workspace">
+<div class="welcome"><div><p class="eyebrow">BIENVENUE</p><h2 id="coupleTitle">Votre duo</h2></div><span class="status">ESPACE DÉMO</span></div>
+<div class="cards">
+<article class="card"><div class="icon">♡</div><h3>Notre complicité</h3><p>Une petite question pour mieux vous connaître.</p><div class="prompt" id="prompt">Quel moment récent vous a fait sourire ensemble ?</div><button class="secondary" id="newPrompt">Autre question</button></article>
+<article class="card"><div class="icon">✦</div><h3>Nos projets</h3><p>Notez une idée ou une activité à réaliser à deux.</p><textarea id="project" placeholder="Notre prochaine belle idée…"></textarea><button class="secondary" id="saveProject">Garder sur cet appareil</button><p class="tiny" id="saveMsg"></p></article>
+<article class="card"><div class="icon">♡</div><h3>Notre moment</h3><p>Choisissez une activité simple à partager.</p><ul><li>Préparer un repas ensemble</li><li>Faire une promenade</li><li>Écouter votre chanson préférée</li><li>Échanger trois compliments sincères</li></ul></article>
+</div>
+<p class="notice">Respect, consentement et confidentialité : chacun peut quitter cet espace à tout moment. N'y ajoutez pas de données sensibles ni de photos intimes.</p>
 </section>
 </main>
-<footer><span>IMMA PRIVÉ · 18+ · Consentement · Respect · Confidentialité</span><button id="aboutBtn" class="about-link">À propos</button></footer>
-<div id="aboutModal" class="modal hidden"><div class="modal-card panel"><button id="closeAbout" class="close" aria-label="Fermer">×</button><p class="eyebrow">À PROPOS</p><div class="about-brand">IMMA <b>PRIVÉ</b></div><p class="about-credit">Imma &amp; Enock</p><p class="muted">Un espace privé imaginé autour du respect, du consentement et de la confidentialité.</p><button id="closeAbout2" class="btn secondary">Fermer</button></div></div>
-<script type="module" src="app.js"></script>
+<footer><span>IMMA PRIVÉ © 2026</span><button id="aboutBtn" class="link">À propos</button></footer>
+<div class="modal hidden" id="about"><div class="modalbox"><button class="close" id="close">×</button><h2>À propos</h2><p>IMMA PRIVÉ est un concept de communauté réservée aux adultes, fondé sur le respect, le consentement et la discrétion.</p><p class="gold">Imma &amp; Enock</p></div></div>
+<script src="app.js"></script>
 </body></html>

@@ -2,25 +2,26 @@ rules_version = '2';
 service cloud.firestore {
  match /databases/{database}/documents {
   function signedIn(){return request.auth != null;}
-  function approved(){
-   return signedIn()
-    && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status=="approved"
-    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.adultConfirmed==true;
+  function approved(){return signedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == "approved" && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.ageConfirmed == true;}
+  match /users/{uid} {
+   allow read: if signedIn() && request.auth.uid == uid;
+   // Création de profil limitée aux champs attendus. Les changements de statut/coupleId
+   // doivent être effectués par l'administration/le serveur, jamais par le client.
+   allow create: if signedIn() && request.auth.uid == uid
+     && request.resource.data.uid == uid
+     && request.resource.data.status == "pending"
+     && request.resource.data.ageConfirmed == true;
+   allow update: if signedIn() && request.auth.uid == uid
+     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["pseudo"]);
+   allow delete: if false;
   }
-  match /users/{uid}{
-   allow read:if signedIn()&&(request.auth.uid==uid||approved());
-   allow write:if false;
+  match /coupleInvitations/{id} {
+   allow read: if approved() && (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid);
+   allow create, update, delete: if false;
   }
-  match /fantasyNotes/{noteId}{
-   allow create:if approved()
-    &&request.resource.data.keys().hasOnly(["ownerId","title","body","category","createdAt","updatedAt"])
-    &&request.resource.data.ownerId==request.auth.uid
-    &&request.resource.data.title is string&&request.resource.data.title.size()>0&&request.resource.data.title.size()<=70
-    &&request.resource.data.body is string&&request.resource.data.body.size()>0&&request.resource.data.body.size()<=5000
-    &&request.resource.data.category is string;
-   allow read,delete:if approved()&&resource.data.ownerId==request.auth.uid;
-   allow update:if false;
+  match /coupleLinks/{id} {
+   allow read: if approved() && request.auth.uid in resource.data.memberIds;
+   allow create, update, delete: if false;
   }
  }
 }

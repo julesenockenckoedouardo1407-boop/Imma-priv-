@@ -1,33 +1,25 @@
 <!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>IMMA PRIVÉ — IMMA COUPLE</title><link rel="stylesheet" href="style.css">
-</head>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IMMA PRIVÉ — Liaison Couple</title><link rel="stylesheet" href="style.css"></head>
 <body>
-<header><div class="brand"><span class="lips">💋</span><div><b>IMMA PRIVÉ</b><small>Le plaisir du mystère, l'élégance de l'intimité.</small></div></div><span class="badge">18+ • ESPACE PRIVÉ</span></header>
+<header><div class="brand"><span>💋</span><div><b>IMMA PRIVÉ</b><small>Le plaisir du mystère, l'élégance de l'intimité.</small></div></div><span class="badge">18+ • ESPACE PRIVÉ</span></header>
 <main>
-<section class="hero"><p class="eyebrow">VOTRE ESPACE À DEUX</p><h1>IMMA <em>COUPLE</em></h1><p>Un espace réservé aux couples adultes qui souhaitent partager des idées, renforcer leur complicité et créer de beaux souvenirs, dans le respect mutuel.</p></section>
-<section class="panel" id="gate">
-<h2>Accéder à IMMA COUPLE</h2><p class="muted">Cette maquette présente l'espace. La connexion réelle à deux doit être activée avec Firebase et une validation sécurisée.</p>
-<div class="grid">
-<label>Votre pseudonyme<input id="pseudo" placeholder="Ex. ÉtoileDorée"></label>
-<label>Pseudonyme de votre partenaire<input id="partner" placeholder="Ex. MonCœur"></label>
-</div>
-<label class="check"><input type="checkbox" id="consent"> Nous sommes tous les deux adultes et consentons à utiliser cet espace ensemble.</label>
-<button id="enter">Ouvrir l'espace de démonstration</button><p id="msg" class="message"></p>
+<section class="hero"><p class="eyebrow">CONNEXION SÉCURISÉE</p><h1>IMMA <em>COUPLE</em></h1><p>Invitez votre partenaire. Votre espace commun ne sera créé qu'après son acceptation.</p></section>
+<section class="panel" id="authPanel"><h2>Connexion / Inscription</h2>
+<div class="grid"><label>Adresse e-mail<input id="email" type="email" autocomplete="email"></label><label>Mot de passe<input id="password" type="password" autocomplete="current-password"></label></div>
+<label id="pseudoWrap">Pseudonyme (inscription)<input id="pseudo" maxlength="30"></label>
+<label class="check"><input type="checkbox" id="age"> Je confirme être majeur(e) et avoir au moins 18 ans.</label>
+<div class="buttons"><button id="register">Créer mon compte</button><button class="secondary" id="login">Me connecter</button></div><p id="authMsg" class="message"></p>
 </section>
-<section class="workspace hidden" id="workspace">
-<div class="welcome"><div><p class="eyebrow">BIENVENUE</p><h2 id="coupleTitle">Votre duo</h2></div><span class="status">ESPACE DÉMO</span></div>
-<div class="cards">
-<article class="card"><div class="icon">♡</div><h3>Notre complicité</h3><p>Une petite question pour mieux vous connaître.</p><div class="prompt" id="prompt">Quel moment récent vous a fait sourire ensemble ?</div><button class="secondary" id="newPrompt">Autre question</button></article>
-<article class="card"><div class="icon">✦</div><h3>Nos projets</h3><p>Notez une idée ou une activité à réaliser à deux.</p><textarea id="project" placeholder="Notre prochaine belle idée…"></textarea><button class="secondary" id="saveProject">Garder sur cet appareil</button><p class="tiny" id="saveMsg"></p></article>
-<article class="card"><div class="icon">♡</div><h3>Notre moment</h3><p>Choisissez une activité simple à partager.</p><ul><li>Préparer un repas ensemble</li><li>Faire une promenade</li><li>Écouter votre chanson préférée</li><li>Échanger trois compliments sincères</li></ul></article>
+<section class="panel hidden" id="appPanel">
+<div class="welcome"><div><p class="eyebrow">VOTRE COMPTE</p><h2 id="myName">Membre</h2></div><button class="secondary" id="logout">Déconnexion</button></div>
+<p id="approval" class="notice"></p>
+<div id="coupleArea" class="hidden">
+<h2>Votre liaison</h2><div id="coupleState" class="notice"></div>
+<label>Adresse e-mail de votre partenaire<input id="partnerEmail" type="email" placeholder="partenaire@exemple.com"></label>
+<button id="sendInvite">Envoyer une invitation</button><p id="inviteMsg" class="message"></p>
+<h3>Invitations reçues</h3><div id="received"></div>
+<h3>Invitations envoyées</h3><div id="sent"></div>
 </div>
-<p class="notice">Respect, consentement et confidentialité : chacun peut quitter cet espace à tout moment. N'y ajoutez pas de données sensibles ni de photos intimes.</p>
 </section>
-</main>
-<footer><span>IMMA PRIVÉ © 2026</span><button id="aboutBtn" class="link">À propos</button></footer>
-<div class="modal hidden" id="about"><div class="modalbox"><button class="close" id="close">×</button><h2>À propos</h2><p>IMMA PRIVÉ est un concept de communauté réservée aux adultes, fondé sur le respect, le consentement et la discrétion.</p><p class="gold">Imma &amp; Enock</p></div></div>
-<script src="app.js"></script>
-</body></html>
+</main><footer><span>IMMA PRIVÉ © 2026</span><span>Imma &amp; Enock</span></footer>
+<script type="module" src="app.js"></script></body></html>

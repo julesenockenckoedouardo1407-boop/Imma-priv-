@@ -2,28 +2,61 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
-    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function approved() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && myProfile().status == "approved" && myProfile().adultConfirmed == true;
+    }
+    function admin() { return signedIn() && request.auth.token.admin == true; }
 
     match /users/{uid} {
-      allow create: if isOwner(uid)
-        && request.resource.data.keys().hasOnly([
-          'username','email','status','role','adultConfirmed','rulesAccepted','createdAt'
-        ])
-        && request.resource.data.username is string
-        && request.resource.data.username.size() >= 3
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(["email","displayName","bio","adultConfirmed","status","createdAt"])
         && request.resource.data.email == request.auth.token.email
-        && request.resource.data.status == 'pending'
-        && request.resource.data.role == 'member'
         && request.resource.data.adultConfirmed == true
-        && request.resource.data.rulesAccepted == true;
-      allow read: if isOwner(uid) || isAdmin();
-      allow update: if isAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status','reviewedAt','reviewedBy'])
-        && request.resource.data.status in ['pending','approved','rejected'];
-      allow delete: if isAdmin() || isOwner(uid);
+        && request.resource.data.status == "pending";
+      allow read: if signedIn() && (request.auth.uid == uid || approved() || admin());
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["displayName","bio"])
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.displayName.size() <= 40
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() <= 240;
+      allow update: if admin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status","reviewedAt","reviewedBy"]);
+      allow delete: if admin();
     }
-    match /{document=**} { allow read, write: if false; }
+
+    match /posts/{postId} {
+      allow read: if approved() || admin();
+      allow create: if approved()
+        && request.resource.data.keys().hasOnly(["authorId","authorName","text","createdAt"])
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 1000
+        && request.resource.data.authorName is string;
+      allow update, delete: if approved() && resource.data.authorId == request.auth.uid
+        || admin();
+      match /likes/{uid} {
+        allow read: if approved() || admin();
+        allow create, delete: if approved() && request.auth.uid == uid
+          && (!exists(/databases/$(database)/documents/posts/$(postId)) ? false : true);
+        allow update: if false;
+      }
+      match /comments/{commentId} {
+        allow read: if approved() || admin();
+        allow create: if approved()
+          && request.resource.data.keys().hasOnly(["authorId","authorName","text","createdAt"])
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 300;
+        allow update, delete: if approved() && resource.data.authorId == request.auth.uid || admin();
+      }
+    }
   }
 }

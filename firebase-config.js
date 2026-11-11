@@ -1,4 +1,4 @@
-// Mets ici les informations de configuration Web de ton projet Firebase.
+// Remplace ces valeurs par la configuration Web de ton projet Firebase.
 export const firebaseConfig = {
  apiKey:"REMPLACER_API_KEY",
  authDomain:"REMPLACER.firebaseapp.com",

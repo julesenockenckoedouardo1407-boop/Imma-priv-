@@ -1,19 +1,38 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#170b12"><title>IMMA PRIVÉ — IMMA LOVE</title><link rel="stylesheet" href="style.css"></head>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#170b12"><title>IMMA PRIVÉ — IMMA FANTASY</title><link rel="stylesheet" href="style.css"></head>
 <body>
-<header class="topbar"><a class="brand" href="#"><span>♥</span> IMMA <b>PRIVÉ</b></a><div class="right"><span class="tagline">IMMA LOVE · Les rencontres commencent par le respect.</span><button id="logout" class="btn ghost hidden">Déconnexion</button></div></header>
+<header class="topbar"><a class="brand" href="#"><span>♥</span> IMMA <b>PRIVÉ</b></a><div class="top-actions"><span class="tagline">Un espace intime, personnel et confidentiel.</span><button id="logout" class="btn ghost hidden">Déconnexion</button></div></header>
 <main>
-<section id="loginView" class="panel login"><p class="eyebrow">IMMA LOVE · 18+</p><h1>Une rencontre.<br><em>Peut-être une belle histoire.</em></h1><p class="muted">Connecte-toi avec ton compte IMMA PRIVÉ validé.</p><form id="loginForm"><label>E-mail<input id="email" type="email" required></label><label>Mot de passe<input id="password" type="password" required></label><button class="btn primary">Se connecter</button><p id="loginMsg" class="message"></p></form></section>
-<section id="pendingView" class="panel pending hidden"><p class="eyebrow">ACCÈS RÉSERVÉ</p><h2>Validation nécessaire</h2><p class="muted">IMMA LOVE est réservé aux membres adultes validés par l'administration.</p><button id="pendingLogout" class="btn ghost">Déconnexion</button></section>
-<section id="loveApp" class="hidden">
-<div class="intro"><div><p class="eyebrow">TON ESPACE RENCONTRES</p><h1>IMMA <em>LOVE</em></h1><p class="muted">Découvre des membres, présente-toi et manifeste ton intérêt sans pression.</p></div><div class="seal">18+<small>ADULTES</small></div></div>
-<div class="layout">
-<aside class="panel profile-panel"><p class="eyebrow">MON PROFIL LOVE</p><div class="profile-avatar" id="myAvatar">♥</div><label>Pseudonyme<input id="myName" maxlength="40"></label><label>Ma présentation<textarea id="myBio" rows="4" maxlength="240" placeholder="Parle de toi, de tes passions et de ce que tu apprécies…"></textarea></label><label>Mes centres d'intérêt<input id="myInterests" maxlength="120" placeholder="Musique, lecture, voyage…"></label><label>Ce que je recherche<select id="mySeeking"><option value="Amitié">Amitié</option><option value="Rencontre sérieuse">Rencontre sérieuse</option><option value="Faire connaissance">Faire connaissance</option><option value="Je préfère voir">Je préfère voir</option></select></label><button id="saveProfile" class="btn secondary">Enregistrer mon profil</button><p id="profileMsg" class="message"></p><p class="tiny muted">N'indique pas ton adresse, ton numéro de téléphone ni ton lieu de résidence précis.</p></aside>
-<section class="discover">
-<div class="tabs"><button id="discoverTab" class="tab active">Découvrir</button><button id="likesTab" class="tab">Mes intérêts reçus</button><button id="matchesTab" class="tab">Mes affinités</button></div>
-<div id="discoverPanel"><div class="section-head"><div><p class="eyebrow">FAIS CONNAISSANCE</p><h2>Des profils à découvrir</h2></div><button id="refresh" class="btn ghost">Actualiser</button></div><div id="profiles" class="cards"><p class="muted">Chargement des profils…</p></div></div>
-<div id="likesPanel" class="hidden"><div class="section-head"><div><p class="eyebrow">QUI S'INTÉRESSE À TOI ?</p><h2>Intérêts reçus</h2></div></div><div id="incoming" class="cards"></div></div>
-<div id="matchesPanel" class="hidden"><div class="section-head"><div><p class="eyebrow">INTÉRÊT RÉCIPROQUE</p><h2>Vos affinités</h2></div></div><div id="matches" class="cards"></div></div>
-</section></div>
+<section id="loginView" class="panel login">
+ <p class="eyebrow">IMMA FANTASY · 18+</p><h1>L'imagination<br><em>en toute liberté.</em></h1>
+ <p class="muted">Un carnet privé pour écrire tes pensées, tes envies et tes idées. Tes notes restent personnelles.</p>
+ <form id="loginForm"><label>Adresse e-mail<input id="email" type="email" required autocomplete="email"></label><label>Mot de passe<input id="password" type="password" required autocomplete="current-password"></label><button class="btn primary" type="submit">Se connecter</button><p id="loginMsg" class="message"></p></form>
 </section>
-</main><footer>IMMA PRIVÉ · 18+ · Consentement · Respect · Confidentialité</footer><script type="module" src="app.js"></script></body></html>
+<section id="pendingView" class="panel pending hidden"><p class="eyebrow">ACCÈS RÉSERVÉ</p><h2>Validation nécessaire</h2><p class="muted">IMMA FANTASY est réservé aux membres adultes dont le compte a été validé.</p><button id="pendingLogout" class="btn ghost">Déconnexion</button></section>
+<section id="fantasyApp" class="hidden">
+ <div class="hero"><div><p class="eyebrow">TON CARNET PERSONNEL</p><h1>IMMA <em>FANTASY</em></h1><p class="muted">Écris pour toi. Choisis ce que tu gardes privé. Tu n'as aucune obligation de partager.</p></div><div class="seal">18+<small>PRIVÉ</small></div></div>
+ <div class="workspace">
+  <section class="panel editor">
+   <p class="eyebrow">NOUVELLE NOTE</p><h2>Donne forme à tes pensées</h2>
+   <form id="noteForm">
+    <label>Titre<input id="noteTitle" maxlength="70" placeholder="Un titre pour ta note…" required></label>
+    <label>Catégorie<select id="noteCategory"><option>Rêverie</option><option>Envie de voyage</option><option>Romance</option><option>Moments à deux</option><option>Préférences personnelles</option><option>Autre pensée</option></select></label>
+    <label>Ton texte<textarea id="noteBody" rows="8" maxlength="5000" placeholder="Écris librement, dans le respect de toi-même et des autres…" required></textarea></label>
+    <div class="editor-foot"><span class="tiny muted">Maximum 5 000 caractères · Visible uniquement par toi</span><button class="btn primary" type="submit">Enregistrer dans mon carnet</button></div>
+    <p id="saveMsg" class="message"></p>
+   </form>
+  </section>
+  <section class="panel journal">
+   <div class="journal-head"><div><p class="eyebrow">MES NOTES</p><h2>Mon carnet privé</h2></div><button id="reload" class="btn ghost">Actualiser</button></div>
+   <input id="searchNotes" class="search" placeholder="Rechercher dans mes notes…">
+   <div id="notesList" class="notes"><p class="muted tiny">Chargement de ton carnet…</p></div>
+  </section>
+ </div>
+ <section class="privacy panel"><span class="lock">♢</span><div><h3>Ton intimité t'appartient.</h3><p>Les notes sont privées et accessibles uniquement depuis ton compte. Ne rédige pas de contenu concernant une autre personne sans son consentement. Ne stocke pas d'informations sensibles ou de données permettant de localiser quelqu'un.</p></div></section>
+</section>
+</main>
+<footer><span>IMMA PRIVÉ · 18+ · Consentement · Respect · Confidentialité</span><button id="aboutBtn" class="about-link">À propos</button></footer>
+<div id="aboutModal" class="modal hidden"><div class="modal-card panel"><button id="closeAbout" class="close" aria-label="Fermer">×</button><p class="eyebrow">À PROPOS</p><div class="about-brand">IMMA <b>PRIVÉ</b></div><p class="about-credit">Imma &amp; Enock</p><p class="muted">Un espace privé imaginé autour du respect, du consentement et de la confidentialité.</p><button id="closeAbout2" class="btn secondary">Fermer</button></div></div>
+<script type="module" src="app.js"></script>
+</body></html>

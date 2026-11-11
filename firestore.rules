@@ -8,49 +8,19 @@ service cloud.firestore {
     && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status=="approved"
     && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.adultConfirmed==true;
   }
-  function validPair(a,b){return a is string && b is string && a!=b;}
-  function reciprocal(a,b){
-   return exists(/databases/$(database)/documents/loveLikes/$(a+"_"+b))
-    && exists(/databases/$(database)/documents/loveLikes/$(b+"_"+a));
-  }
   match /users/{uid}{
    allow read:if signedIn()&&(request.auth.uid==uid||approved());
-   allow write:if false; // Les profils principaux sont gérés par le flux d'inscription.
+   allow write:if false;
   }
-  match /loveProfiles/{uid}{
-   allow read:if approved();
-   allow create:if approved()&&request.auth.uid==uid
-    &&request.resource.data.keys().hasOnly(["uid","displayName","bio","interests","seeking","createdAt","updatedAt"])
-    &&request.resource.data.uid==uid;
-   allow update:if approved()&&request.auth.uid==uid
-    &&request.resource.data.diff(resource.data).affectedKeys().hasOnly(["displayName","bio","interests","seeking","updatedAt"])
-    &&request.resource.data.displayName is string&&request.resource.data.displayName.size()>0&&request.resource.data.displayName.size()<=40
-    &&request.resource.data.bio is string&&request.resource.data.bio.size()<=240
-    &&request.resource.data.interests is string&&request.resource.data.interests.size()<=120;
-   allow delete:if approved()&&request.auth.uid==uid;
-  }
-  match /loveLikes/{likeId}{
-   allow read:if approved()&&(resource.data.from==request.auth.uid||resource.data.to==request.auth.uid);
+  match /fantasyNotes/{noteId}{
    allow create:if approved()
-    &&request.resource.data.keys().hasOnly(["from","to","createdAt"])
-    &&request.resource.data.from==request.auth.uid
-    &&validPair(request.resource.data.from,request.resource.data.to)
-    &&exists(/databases/$(database)/documents/users/$(request.resource.data.to))
-    &&get(/databases/$(database)/documents/users/$(request.resource.data.to)).data.status=="approved"
-    &&likeId==request.resource.data.from+"_"+request.resource.data.to;
-   allow delete:if approved()&&resource.data.from==request.auth.uid;
+    &&request.resource.data.keys().hasOnly(["ownerId","title","body","category","createdAt","updatedAt"])
+    &&request.resource.data.ownerId==request.auth.uid
+    &&request.resource.data.title is string&&request.resource.data.title.size()>0&&request.resource.data.title.size()<=70
+    &&request.resource.data.body is string&&request.resource.data.body.size()>0&&request.resource.data.body.size()<=5000
+    &&request.resource.data.category is string;
+   allow read,delete:if approved()&&resource.data.ownerId==request.auth.uid;
    allow update:if false;
-  }
-  match /loveMatches/{matchId}{
-   allow read:if approved()&&request.auth.uid in resource.data.members;
-   allow create:if approved()
-    &&request.resource.data.keys().hasOnly(["members","createdAt"])
-    &&request.resource.data.members is list&&request.resource.data.members.size()==2
-    &&request.auth.uid in request.resource.data.members
-    &&request.resource.data.members[0]<request.resource.data.members[1]
-    &&reciprocal(request.resource.data.members[0],request.resource.data.members[1])
-    &&matchId==request.resource.data.members[0]+"_"+request.resource.data.members[1];
-   allow update,delete:if false;
   }
  }
 }

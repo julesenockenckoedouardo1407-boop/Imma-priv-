@@ -1,106 +1,97 @@
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getFirestore,doc,getDoc,collection,query,where,orderBy,onSnapshot,addDoc,serverTimestamp,getDocs,limit} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import {firebaseConfig} from "./firebase-config.js";
-
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
-const $=id=>document.getElementById(id);
-let me=null,profile=null,selected=null,unsubscribeMessages=null,unsubscribeContacts=null,allUsers=[];
-const errText=e=>({"auth/invalid-credential":"E-mail ou mot de passe incorrect.","auth/network-request-failed":"Problème de connexion."}[e.code]||e.message||"Erreur inconnue.");
-
-$("loginForm").onsubmit=async e=>{
- e.preventDefault();$("authMessage").textContent="Connexion…";
- try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}
- catch(err){$("authMessage").textContent=errText(err);}
-};
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,where,getDocs,serverTimestamp,limit}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import{firebaseConfig}from"./firebase-config.js";
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
+let me=null,myData=null,profiles=[],sentIds=new Set(),currentTab="discover";
+const say=(id,t)=>$(id).textContent=t;
+$("loginForm").onsubmit=async e=>{e.preventDefault();say("loginMsg","Connexion…");try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}catch(x){say("loginMsg",x.message);}};
 $("logout").onclick=()=>signOut(auth);$("pendingLogout").onclick=()=>signOut(auth);
-onAuthStateChanged(auth,async user=>{
- me=user;
- $("authView").classList.toggle("hidden",!!user);
- $("logout").classList.toggle("hidden",!user);
- $("pendingView").classList.add("hidden");$("chatApp").classList.add("hidden");
- if(unsubscribeContacts){unsubscribeContacts();unsubscribeContacts=null;}
- stopMessages();
- if(!user)return;
+onAuthStateChanged(auth,async u=>{
+ me=u;$("loginView").classList.toggle("hidden",!!u);$("logout").classList.toggle("hidden",!u);$("pendingView").classList.add("hidden");$("loveApp").classList.add("hidden");
+ if(!u)return;
  try{
-   const snap=await getDoc(doc(db,"users",user.uid));
-   if(!snap.exists()||snap.data().status!=="approved"||snap.data().adultConfirmed!==true){
-     $("pendingView").classList.remove("hidden");return;
-   }
-   profile=snap.data();$("chatApp").classList.remove("hidden");
-   listenContacts();
- }catch(e){alert("Impossible de vérifier ton compte. Vérifie Firebase et les règles Firestore.");console.error(e);}
+  const s=await getDoc(doc(db,"users",u.uid));
+  if(!s.exists()||s.data().status!=="approved"||s.data().adultConfirmed!==true){$("pendingView").classList.remove("hidden");return;}
+  myData=s.data();$("loveApp").classList.remove("hidden");
+  await ensurePublicProfile();await loadProfiles();await loadSent();await loadIncoming();await loadMatches();
+ }catch(e){console.error(e);alert("Erreur de chargement. Vérifie les règles Firestore.");}
 });
-
-function listenContacts(){
- const q=query(collection(db,"users"),where("status","==","approved"),limit(200));
- unsubscribeContacts=onSnapshot(q,snap=>{
-   allUsers=snap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.id!==me.uid);
-   renderContacts($("searchUsers").value);
- },e=>{console.error(e);$("contactList").innerHTML='<p class="muted tiny">Erreur de chargement. Vérifie les règles Firestore.</p>';});
+async function ensurePublicProfile(){
+ const ref=doc(db,"loveProfiles",me.uid),snap=await getDoc(ref);
+ if(!snap.exists()){
+  await setDoc(ref,{uid:me.uid,displayName:myData.displayName||me.displayName||"Membre",bio:myData.bio||"",interests:"",seeking:"Je préfère voir",createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+ }
+ const p=(await getDoc(ref)).data();
+ $("myName").value=p.displayName||"";$("myBio").value=p.bio||"";$("myInterests").value=p.interests||"";$("mySeeking").value=p.seeking||"Je préfère voir";
+ $("myAvatar").textContent=(p.displayName||"♥").slice(0,1).toUpperCase();
 }
-$("searchUsers").oninput=()=>renderContacts($("searchUsers").value);
-function renderContacts(filter=""){
- const box=$("contactList");box.innerHTML="";
- const term=filter.trim().toLowerCase();
- const list=allUsers.filter(u=>(u.displayName||"Membre").toLowerCase().includes(term));
- if(!list.length){box.innerHTML='<p class="muted tiny">Aucun membre trouvé.</p>';return;}
- list.sort((a,b)=>(a.displayName||"").localeCompare(b.displayName||""));
- list.forEach(u=>{
-   const b=document.createElement("button");b.className="contact"+(selected?.id===u.id?" selected":"");
-   const av=document.createElement("span");av.className="avatar";av.textContent=(u.displayName||"M").slice(0,1).toUpperCase();
-   const info=document.createElement("span");const n=document.createElement("div");n.className="contact-name";n.textContent=u.displayName||"Membre";
-   const sub=document.createElement("div");sub.className="contact-sub";sub.textContent="Membre validé";
-   info.append(n,sub);b.append(av,info);b.onclick=()=>openConversation(u);box.append(b);
- });
-}
-function conversationId(a,b){return [a,b].sort().join("_");}
-async function openConversation(user){
- selected=user;renderContacts($("searchUsers").value);
- $("emptyChat").classList.add("hidden");$("activeChat").classList.remove("hidden");
- $("chatName").textContent=user.displayName||"Membre";
- $("chatApp").classList.add("chat-open");
- stopMessages();
- const cid=conversationId(me.uid,user.id);
- // Ensure conversation metadata exists. The rules restrict membership to these two accounts.
- const cRef=doc(db,"conversations",cid);
+$("saveProfile").onclick=async()=>{
  try{
-   const existing=await getDoc(cRef);
-   if(!existing.exists()){
-     // First message will create the conversation document through the transaction-free bootstrap.
-     // Conversation creation is intentionally handled by a callable/server process in a production deployment.
-     // For this starter, the first send creates the metadata and message atomically via the rules.
-   }
- }catch(e){console.warn(e);}
- const q=query(collection(db,"conversations",cid,"messages"),orderBy("createdAt","asc"),limit(250));
- unsubscribeMessages=onSnapshot(q,snap=>{
-   const box=$("messages");box.innerHTML="";
-   snap.forEach(d=>{
-     const m=d.data(),bubble=document.createElement("div");
-     bubble.className="bubble"+(m.senderId===me.uid?" mine":"");
-     const text=document.createElement("span");text.textContent=m.text||"";
-     const time=document.createElement("time");time.textContent=m.createdAt?.toDate?m.createdAt.toDate().toLocaleString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"";
-     bubble.append(text,time);box.append(bubble);
-   });
-   box.scrollTop=box.scrollHeight;
- },e=>{console.error(e);$("messages").innerHTML='<p class="muted tiny">Impossible de charger cette conversation. Vérifie les règles Firestore.</p>';});
-}
-function stopMessages(){if(unsubscribeMessages){unsubscribeMessages();unsubscribeMessages=null;}}
-$("backContacts").onclick=()=>{$("chatApp").classList.remove("chat-open");};
-$("sendForm").onsubmit=async e=>{
- e.preventDefault();if(!selected)return;
- const text=$("messageInput").value.trim();if(!text)return;
- const cid=conversationId(me.uid,selected.id);
- try{
-   const cRef=doc(db,"conversations",cid),cSnap=await getDoc(cRef);
-   if(!cSnap.exists()){
-     // Metadata created by the first participant; rules require exactly these two member IDs.
-     const {setDoc}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
-     await setDoc(cRef,{members:[me.uid,selected.id].sort(),createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
-   }
-   await addDoc(collection(db,"conversations",cid,"messages"),{
-     senderId:me.uid,recipientId:selected.id,text,createdAt:serverTimestamp()
-   });
-   $("messageInput").value="";
- }catch(err){alert(errText(err)+"\nSi la conversation ne peut pas être créée, vérifie les règles Firestore.");}
+  const displayName=$("myName").value.trim(),bio=$("myBio").value.trim(),interests=$("myInterests").value.trim(),seeking=$("mySeeking").value;
+  if(!displayName)throw Error("Le pseudonyme est obligatoire.");
+  await updateDoc(doc(db,"loveProfiles",me.uid),{displayName,bio,interests,seeking,updatedAt:serverTimestamp()});
+  $("myAvatar").textContent=displayName.slice(0,1).toUpperCase();say("profileMsg","Profil mis à jour.");
+  await loadProfiles();
+ }catch(e){say("profileMsg",e.message);}
 };
+async function loadProfiles(){
+ const q=query(collection(db,"loveProfiles"),limit(200)),s=await getDocs(q);
+ profiles=s.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.uid!==me.uid);
+ renderProfiles();
+}
+async function loadSent(){
+ const s=await getDocs(query(collection(db,"loveLikes"),where("from","==",me.uid)));
+ sentIds=new Set(s.docs.map(d=>d.data().to));
+}
+function makeCard(p,actionType="discover"){
+ const card=document.createElement("article");card.className="panel member-card";
+ const top=document.createElement("div");top.className="card-top";
+ const av=document.createElement("div");av.className="avatar";av.textContent=(p.displayName||"M").slice(0,1).toUpperCase();
+ const title=document.createElement("div");const name=document.createElement("div");name.className="member-name";name.textContent=p.displayName||"Membre";
+ const chip=document.createElement("span");chip.className="chip";chip.textContent=p.seeking||"Faire connaissance";title.append(name,chip);top.append(av,title);
+ const bio=document.createElement("p");bio.className="bio";bio.textContent=p.bio||"Ce membre n'a pas encore ajouté de présentation.";
+ const interests=document.createElement("div");interests.className="interests";interests.textContent=p.interests?"Centres d'intérêt : "+p.interests:"";
+ card.append(top,bio,interests);
+ if(actionType==="discover"){
+  const actions=document.createElement("div");actions.className="card-actions";
+  const btn=document.createElement("button");btn.className="btn interest-btn"+(sentIds.has(p.uid)?" sent":"");btn.textContent=sentIds.has(p.uid)?"Intérêt envoyé":"Exprimer mon intérêt";btn.disabled=sentIds.has(p.uid);
+  btn.onclick=()=>sendInterest(p,btn);actions.append(btn);card.append(actions);
+ }
+ return card;
+}
+function renderProfiles(){
+ const box=$("profiles");box.innerHTML="";
+ if(!profiles.length){box.innerHTML='<div class="empty">Pas encore de profils disponibles. Reviens un peu plus tard.</div>';return;}
+ profiles.forEach(p=>box.append(makeCard(p)));
+}
+async function sendInterest(p,btn){
+ try{
+  const id=me.uid+"_"+p.uid,ref=doc(db,"loveLikes",id);
+  await setDoc(ref,{from:me.uid,to:p.uid,createdAt:serverTimestamp()});
+  sentIds.add(p.uid);btn.textContent="Intérêt envoyé";btn.classList.add("sent");btn.disabled=true;
+  await loadIncoming();await loadMatches();
+ }catch(e){alert("Impossible d'envoyer cet intérêt : "+e.message);}
+}
+async function loadIncoming(){
+ const box=$("incoming");box.innerHTML="";
+ const s=await getDocs(query(collection(db,"loveLikes"),where("to","==",me.uid)));
+ if(s.empty){box.innerHTML='<div class="empty">Aucun nouvel intérêt pour le moment.</div>';return;}
+ const ids=s.docs.map(d=>d.data().from);
+ const matches=await getDocs(query(collection(db,"loveMatches"),where("members","array-contains",me.uid)));
+ const matched=new Set(matches.docs.map(d=>d.data().members.find(x=>x!==me.uid)));
+ for(const uid of ids){if(matched.has(uid))continue;const p=await getDoc(doc(db,"loveProfiles",uid));if(p.exists())box.append(makeCard(p.data(),"incoming"));}
+ if(!box.children.length)box.innerHTML='<div class="empty">Aucun nouvel intérêt en attente.</div>';
+}
+async function loadMatches(){
+ const box=$("matches");box.innerHTML="";
+ const s=await getDocs(query(collection(db,"loveMatches"),where("members","array-contains",me.uid)));
+ if(s.empty){box.innerHTML='<div class="empty">Les affinités apparaîtront ici lorsque l'intérêt sera réciproque.</div>';return;}
+ for(const d of s.docs){const uid=d.data().members.find(x=>x!==me.uid);if(!uid)continue;const p=await getDoc(doc(db,"loveProfiles",uid));if(p.exists())box.append(makeCard(p.data(),"match"));}
+}
+function showTab(tab){
+ currentTab=tab;
+ ["discover","likes","matches"].forEach(t=>{$(t+"Panel").classList.toggle("hidden",t!==tab);$(t+"Tab").classList.toggle("active",t===tab);});
+}
+$("discoverTab").onclick=()=>showTab("discover");$("likesTab").onclick=()=>showTab("likes");$("matchesTab").onclick=()=>showTab("matches");
+$("refresh").onclick=async()=>{await loadProfiles();await loadSent();renderProfiles();};

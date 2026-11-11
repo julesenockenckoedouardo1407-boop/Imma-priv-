@@ -1,25 +1,18 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IMMA PRIVÉ — Liaison Couple</title><link rel="stylesheet" href="style.css"></head>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IMMA PRIVÉ — IMMA COUPLE</title><link rel="stylesheet" href="style.css"></head>
 <body>
 <header><div class="brand"><span>💋</span><div><b>IMMA PRIVÉ</b><small>Le plaisir du mystère, l'élégance de l'intimité.</small></div></div><span class="badge">18+ • ESPACE PRIVÉ</span></header>
-<main>
-<section class="hero"><p class="eyebrow">CONNEXION SÉCURISÉE</p><h1>IMMA <em>COUPLE</em></h1><p>Invitez votre partenaire. Votre espace commun ne sera créé qu'après son acceptation.</p></section>
+<main><section class="hero"><p class="eyebrow">ESPACE SÉCURISÉ À DEUX</p><h1>IMMA <em>COUPLE</em></h1><p>Votre liaison ne sera créée qu'après l'acceptation explicite des deux membres.</p></section>
 <section class="panel" id="authPanel"><h2>Connexion / Inscription</h2>
 <div class="grid"><label>Adresse e-mail<input id="email" type="email" autocomplete="email"></label><label>Mot de passe<input id="password" type="password" autocomplete="current-password"></label></div>
-<label id="pseudoWrap">Pseudonyme (inscription)<input id="pseudo" maxlength="30"></label>
-<label class="check"><input type="checkbox" id="age"> Je confirme être majeur(e) et avoir au moins 18 ans.</label>
-<div class="buttons"><button id="register">Créer mon compte</button><button class="secondary" id="login">Me connecter</button></div><p id="authMsg" class="message"></p>
-</section>
-<section class="panel hidden" id="appPanel">
-<div class="welcome"><div><p class="eyebrow">VOTRE COMPTE</p><h2 id="myName">Membre</h2></div><button class="secondary" id="logout">Déconnexion</button></div>
-<p id="approval" class="notice"></p>
-<div id="coupleArea" class="hidden">
+<label>Pseudonyme (pour l'inscription)<input id="pseudo" maxlength="30"></label>
+<label class="check"><input type="checkbox" id="age"> Je confirme avoir au moins 18 ans.</label>
+<div class="buttons"><button id="register">Créer mon compte</button><button class="secondary" id="login">Me connecter</button></div><p id="authMsg" class="message"></p></section>
+<section class="panel hidden" id="appPanel"><div class="welcome"><div><p class="eyebrow">VOTRE COMPTE</p><h2 id="myName">Membre</h2></div><button class="secondary" id="logout">Déconnexion</button></div>
+<p id="approval" class="notice"></p><div id="coupleArea" class="hidden">
 <h2>Votre liaison</h2><div id="coupleState" class="notice"></div>
-<label>Adresse e-mail de votre partenaire<input id="partnerEmail" type="email" placeholder="partenaire@exemple.com"></label>
-<button id="sendInvite">Envoyer une invitation</button><p id="inviteMsg" class="message"></p>
-<h3>Invitations reçues</h3><div id="received"></div>
-<h3>Invitations envoyées</h3><div id="sent"></div>
-</div>
-</section>
-</main><footer><span>IMMA PRIVÉ © 2026</span><span>Imma &amp; Enock</span></footer>
+<div id="inviteForm"><label>E-mail de votre partenaire<input id="partnerEmail" type="email" placeholder="partenaire@exemple.com"></label><button id="sendInvite">Envoyer une invitation</button></div><p id="actionMsg" class="message"></p>
+<h3>Invitations reçues</h3><div id="received"></div><h3>Invitations envoyées</h3><div id="sent"></div>
+<button id="requestUnlink" class="secondary">Demander la rupture de liaison</button><div id="unlinkBox" class="hidden"><p class="notice">Une demande de rupture de liaison est en cours. La liaison ne sera supprimée qu'après confirmation du partenaire.</p><button id="confirmUnlink">Confirmer la rupture</button><button class="secondary" id="cancelUnlink">Annuler ma demande</button></div>
+</div></section></main><footer><span>IMMA PRIVÉ © 2026</span><span>Imma &amp; Enock</span></footer>
 <script type="module" src="app.js"></script></body></html>

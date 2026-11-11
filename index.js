@@ -2,52 +2,13 @@ const {onCall,HttpsError}=require("firebase-functions/v2/https");
 const {initializeApp}=require("firebase-admin/app");
 const {getAuth}=require("firebase-admin/auth");
 const {getFirestore,FieldValue}=require("firebase-admin/firestore");
-initializeApp();
-const db=getFirestore();
-async function approved(uid){
- const s=await db.doc(`users/${uid}`).get();
- if(!s.exists) throw new HttpsError("failed-precondition","Profil introuvable.");
- const u=s.data();
- if(u.status!=="approved"||u.ageConfirmed!==true) throw new HttpsError("permission-denied","Les deux comptes doivent être approuvés et avoir confirmé leur majorité.");
- return u;
-}
-exports.sendCoupleInvite=onCall(async request=>{
- if(!request.auth) throw new HttpsError("unauthenticated","Connectez-vous.");
- const uid=request.auth.uid, me=await approved(uid);
- if(me.coupleId) throw new HttpsError("failed-precondition","Votre compte est déjà lié à un partenaire.");
- const email=String(request.data?.partnerEmail||"").trim().toLowerCase();
- if(!email||email===String(request.auth.token.email||"").toLowerCase()) throw new HttpsError("invalid-argument","Adresse partenaire invalide.");
- let target;try{target=await getAuth().getUserByEmail(email)}catch(e){throw new HttpsError("not-found","Aucun compte ne correspond à cette adresse e-mail.")}
- if(target.uid===uid) throw new HttpsError("invalid-argument","Vous ne pouvez pas vous inviter vous-même.");
- const partner=await approved(target.uid);
- if(partner.coupleId) throw new HttpsError("failed-precondition","Ce compte est déjà lié à un partenaire.");
- const existing=await db.collection("coupleInvitations").where("fromUid","==",uid).where("toUid","==",target.uid).where("status","==","pending").limit(1).get();
- if(!existing.empty) throw new HttpsError("already-exists","Une invitation est déjà en attente.");
- const reverse=await db.collection("coupleInvitations").where("fromUid","==",target.uid).where("toUid","==",uid).where("status","==","pending").limit(1).get();
- if(!reverse.empty) throw new HttpsError("already-exists","Cette personne vous a déjà envoyé une invitation. Consultez vos invitations reçues.");
- await db.collection("coupleInvitations").add({fromUid:uid,fromEmail:request.auth.token.email||"",fromPseudo:me.pseudo||"",toUid:target.uid,toEmail:email,status:"pending",createdAt:FieldValue.serverTimestamp()});
- return {ok:true};
-});
-exports.acceptCoupleInvite=onCall(async request=>{
- if(!request.auth) throw new HttpsError("unauthenticated","Connectez-vous.");
- const uid=request.auth.uid, inviteId=String(request.data?.inviteId||"");
- if(!inviteId) throw new HttpsError("invalid-argument","Invitation manquante.");
- const me=await approved(uid), ref=db.doc(`coupleInvitations/${inviteId}`);
- await db.runTransaction(async tx=>{
-  const invSnap=await tx.get(ref);
-  if(!invSnap.exists) throw new HttpsError("not-found","Invitation introuvable.");
-  const inv=invSnap.data();
-  if(inv.toUid!==uid||inv.status!=="pending") throw new HttpsError("permission-denied","Cette invitation ne vous est pas destinée ou n'est plus active.");
-  const fromRef=db.doc(`users/${inv.fromUid}`),toRef=db.doc(`users/${uid}`);
-  const fromSnap=await tx.get(fromRef),toSnap=await tx.get(toRef);
-  if(!fromSnap.exists||!toSnap.exists) throw new HttpsError("failed-precondition","Profil manquant.");
-  const a=fromSnap.data(),b=toSnap.data();
-  if(a.status!=="approved"||a.ageConfirmed!==true||b.status!=="approved"||b.ageConfirmed!==true) throw new HttpsError("permission-denied","Les deux membres doivent être approuvés et majeurs.");
-  if(a.coupleId||b.coupleId) throw new HttpsError("failed-precondition","Un des comptes est déjà lié.");
-  const coupleId=inv.fromUid<uid?`${inv.fromUid}_${uid}`:`${uid}_${inv.fromUid}`;
-  tx.create(db.doc(`coupleLinks/${coupleId}`),{memberIds:[inv.fromUid,uid],memberNames:[a.pseudo||inv.fromEmail,b.pseudo||request.auth.token.email||""],createdAt:FieldValue.serverTimestamp(),createdBy:uid});
-  tx.update(fromRef,{coupleId});tx.update(toRef,{coupleId});
-  tx.update(ref,{status:"accepted",acceptedAt:FieldValue.serverTimestamp()});
- });
- return {ok:true};
-});
+initializeApp();const db=getFirestore();
+async function approved(uid){const s=await db.doc(`users/${uid}`).get();if(!s.exists)throw new HttpsError("failed-precondition","Profil introuvable.");const u=s.data();if(u.status!=="approved"||u.ageConfirmed!==true)throw new HttpsError("permission-denied","Compte non approuvé ou majorité non confirmée.");return u;}
+exports.sendCoupleInvite=onCall(async r=>{if(!r.auth)throw new HttpsError("unauthenticated","Connectez-vous.");const uid=r.auth.uid,me=await approved(uid);if(me.coupleId)throw new HttpsError("failed-precondition","Vous êtes déjà lié(e).");const email=String(r.data?.partnerEmail||"").trim().toLowerCase();if(!email||email===String(r.auth.token.email||"").toLowerCase())throw new HttpsError("invalid-argument","Adresse invalide.");let target;try{target=await getAuth().getUserByEmail(email)}catch{throw new HttpsError("not-found","Aucun compte trouvé pour cette adresse.");}if(target.uid===uid)throw new HttpsError("invalid-argument","Auto-invitation impossible.");const partner=await approved(target.uid);if(partner.coupleId)throw new HttpsError("failed-precondition","Ce compte est déjà lié.");const q=await db.collection("coupleInvitations").where("fromUid","==",uid).where("toUid","==",target.uid).where("status","==","pending").limit(1).get();if(!q.empty)throw new HttpsError("already-exists","Invitation déjà envoyée.");const rev=await db.collection("coupleInvitations").where("fromUid","==",target.uid).where("toUid","==",uid).where("status","==","pending").limit(1).get();if(!rev.empty)throw new HttpsError("already-exists","Cette personne vous a déjà invité(e). Consultez les invitations reçues.");await db.collection("coupleInvitations").add({fromUid:uid,fromEmail:r.auth.token.email||"",fromPseudo:me.pseudo||"",toUid:target.uid,toEmail:email,status:"pending",createdAt:FieldValue.serverTimestamp()});return{ok:true};});
+exports.acceptCoupleInvite=onCall(async r=>{if(!r.auth)throw new HttpsError("unauthenticated","Connectez-vous.");const uid=r.auth.uid;await approved(uid);const id=String(r.data?.inviteId||"");if(!id)throw new HttpsError("invalid-argument","Invitation manquante.");const ref=db.doc(`coupleInvitations/${id}`);await db.runTransaction(async tx=>{const s=await tx.get(ref);if(!s.exists)throw new HttpsError("not-found","Invitation introuvable.");const inv=s.data();if(inv.toUid!==uid||inv.status!=="pending")throw new HttpsError("permission-denied","Invitation non valable.");const ar=db.doc(`users/${inv.fromUid}`),br=db.doc(`users/${uid}`);const [as,bs]=await Promise.all([tx.get(ar),tx.get(br)]);if(!as.exists||!bs.exists)throw new HttpsError("failed-precondition","Profil manquant.");const a=as.data(),b=bs.data();if(a.status!=="approved"||a.ageConfirmed!==true||b.status!=="approved"||b.ageConfirmed!==true)throw new HttpsError("permission-denied","Les deux comptes doivent être approuvés et majeurs.");if(a.coupleId||b.coupleId)throw new HttpsError("failed-precondition","Un compte est déjà lié.");const cid=inv.fromUid<uid?`${inv.fromUid}_${uid}`:`${uid}_${inv.fromUid}`;tx.create(db.doc(`coupleLinks/${cid}`),{memberIds:[inv.fromUid,uid],memberNames:[a.pseudo||inv.fromEmail,b.pseudo||r.auth.token.email||""],createdAt:FieldValue.serverTimestamp()});tx.update(ar,{coupleId:cid});tx.update(br,{coupleId:cid});tx.update(ref,{status:"accepted",acceptedAt:FieldValue.serverTimestamp()});});return{ok:true};});
+async function changeInvite(r,newStatus,expectedUidField){if(!r.auth)throw new HttpsError("unauthenticated","Connectez-vous.");const uid=r.auth.uid;await approved(uid);const id=String(r.data?.inviteId||"");if(!id)throw new HttpsError("invalid-argument","Invitation manquante.");const ref=db.doc(`coupleInvitations/${id}`);await db.runTransaction(async tx=>{const s=await tx.get(ref);if(!s.exists)throw new HttpsError("not-found","Invitation introuvable.");const x=s.data();if(x[expectedUidField]!==uid||x.status!=="pending")throw new HttpsError("permission-denied","Action non autorisée.");tx.update(ref,{status:newStatus,updatedAt:FieldValue.serverTimestamp()});});return{ok:true};}
+exports.declineCoupleInvite=onCall(r=>changeInvite(r,"declined","toUid"));
+exports.cancelCoupleInvite=onCall(r=>changeInvite(r,"cancelled","fromUid"));
+exports.requestCoupleUnlink=onCall(async r=>{if(!r.auth)throw new HttpsError("unauthenticated","Connectez-vous.");const uid=r.auth.uid,u=await approved(uid);if(!u.coupleId)throw new HttpsError("failed-precondition","Aucune liaison active.");const ref=db.doc(`coupleLinks/${u.coupleId}`);await db.runTransaction(async tx=>{const s=await tx.get(ref);if(!s.exists||!s.data().memberIds.includes(uid))throw new HttpsError("not-found","Liaison introuvable.");if(s.data().unlinkRequestedBy)throw new HttpsError("already-exists","Une demande est déjà en cours.");tx.update(ref,{unlinkRequestedBy:uid,unlinkRequestedAt:FieldValue.serverTimestamp()});});return{ok:true};});
+exports.confirmCoupleUnlink=onCall(async r=>{if(!r.auth)throw new HttpsError("unauthenticated","Connectez-vous.");const uid=r.auth.uid,u=await approved(uid);if(!u.coupleId)throw new HttpsError("failed-precondition","Aucune liaison active.");const linkRef=db.doc(`coupleLinks/${u.coupleId}`);await db.runTransaction(async tx=>{const ls=await tx.get(linkRef);if(!ls.exists)throw new HttpsError("not-found","Liaison introuvable.");const link=ls.data();if(!link.memberIds.includes(uid)||!link.unlinkRequestedBy||link.unlinkRequestedBy===uid)throw new HttpsError("permission-denied","Seul l'autre partenaire peut confirmer cette demande.");const refs=link.memberIds.map(id=>db.doc(`users/${id}`));const snaps=await Promise.all(refs.map(ref=>tx.get(ref)));snaps.forEach((s,i)=>{if(s.exists)tx.update(refs[i],{coupleId:FieldValue.delete()})});tx.delete(linkRef);});return{ok:true};});
+exports.cancelCoupleUnlink=onCall(async r=>{if(!r.auth)throw new HttpsError("unauthenticated","Connectez-vous.");const uid=r.auth.uid,u=await approved(uid);if(!u.coupleId)throw new HttpsError("failed-precondition","Aucune liaison active.");const ref=db.doc(`coupleLinks/${u.coupleId}`);await db.runTransaction(async tx=>{const s=await tx.get(ref);if(!s.exists||s.data().unlinkRequestedBy!==uid)throw new HttpsError("permission-denied","Vous ne pouvez annuler que votre propre demande.");tx.update(ref,{unlinkRequestedBy:FieldValue.delete(),unlinkRequestedAt:FieldValue.delete()});});return{ok:true};});

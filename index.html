@@ -1,70 +1,58 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#16090e">
-  <meta name="description" content="IMMA PRIVÉ — communauté adulte fondée sur le respect et le consentement.">
-  <title>IMMA PRIVÉ</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#16090e"><title>IMMA PRIVÉ — Espace membre</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#"><span class="lips">♡</span><span>IMMA <b>PRIVÉ</b></span></a>
-  <span class="adult-tag">18+ · ESPACE ADULTE</span>
+  <a class="brand" href="#"><span class="brand-mark">♡</span><span>IMMA <b>PRIVÉ</b></span></a>
+  <div class="top-right"><span class="adult-tag">18+ · ESPACE ADULTE</span><button id="logout" class="btn btn-outline hidden">Déconnexion</button></div>
 </header>
-
 <main>
-  <section id="welcome" class="hero">
-    <div class="hero-copy">
-      <p class="eyebrow">UN ESPACE QUI VOUS RESSEMBLE</p>
-      <h1>Le mystère a<br><em>son espace.</em></h1>
-      <p class="lead">Rencontres, échanges et confidences dans une communauté adulte où le respect et le consentement passent avant tout.</p>
-      <div class="hero-actions">
-        <button class="btn btn-primary" id="go-register">Créer mon compte</button>
-        <button class="btn btn-ghost" id="go-login">Se connecter</button>
-      </div>
-      <p class="fineprint">Réservé aux personnes de 18 ans et plus. Les nouveaux comptes doivent être validés avant l'accès à la communauté.</p>
-    </div>
-    <div class="hero-art"><div class="halo"></div><div class="seal"><span class="seal-lips">♡</span><span class="seal-name">IMMA</span><span class="seal-sub">PRIVÉ</span></div><div class="art-caption">TON UNIVERS · TES SECRETS</div></div>
-  </section>
+<section id="welcome" class="hero">
+ <div><p class="eyebrow">UN ESPACE QUI VOUS RESSEMBLE</p><h1>Le mystère a<br><em>son espace.</em></h1>
+ <p class="lead">Une communauté adulte fondée sur le respect, le consentement et la confidentialité.</p>
+ <div class="actions"><button class="btn btn-primary" id="go-register">Créer mon compte</button><button class="btn btn-outline" id="go-login">Se connecter</button></div>
+ <p class="small-note">Réservé aux personnes de 18 ans et plus. Chaque inscription doit être validée.</p></div>
+ <div class="emblem"><div class="ring"></div><div class="seal"><span class="seal-icon">♡</span><strong>IMMA</strong><small>PRIVÉ</small></div><p>TON UNIVERS · TES SECRETS</p></div>
+</section>
 
-  <section id="auth-panel" class="auth-panel hidden">
-    <button class="close-panel" id="close-panel" aria-label="Fermer">×</button>
-    <p class="eyebrow">BIENVENUE CHEZ IMMA</p>
-    <h2 id="form-title">Créer un compte</h2>
-    <p class="muted" id="form-subtitle">Rejoignez la communauté en quelques étapes.</p>
-    <form id="auth-form">
-      <label id="name-wrap">Nom d'utilisateur<input id="username" minlength="3" maxlength="24" placeholder="Ex. ImmaRose" autocomplete="nickname"></label>
-      <label>Adresse e-mail<input id="email" type="email" required placeholder="vous@exemple.com" autocomplete="email"></label>
-      <label>Mot de passe<input id="password" type="password" required minlength="8" placeholder="8 caractères minimum" autocomplete="current-password"></label>
-      <label id="confirm-wrap">Confirmer le mot de passe<input id="confirm-password" type="password" minlength="8" placeholder="Répétez le mot de passe"></label>
-      <label id="age-wrap" class="check-row"><input id="age-check" type="checkbox"> Je confirme avoir 18 ans ou plus.</label>
-      <label id="rules-wrap" class="check-row"><input id="rules-check" type="checkbox"> J'accepte les règles de respect, de confidentialité et de consentement.</label>
-      <button class="btn btn-primary full" id="submit-auth" type="submit">Créer mon compte</button>
-      <p class="form-switch" id="form-switch">Déjà membre ? <button type="button" id="switch-mode">Se connecter</button></p>
-      <p id="form-notice" class="notice" role="status"></p>
-    </form>
-  </section>
+<section id="auth-panel" class="auth-panel hidden">
+ <button class="close" id="close-panel">×</button><p class="eyebrow">BIENVENUE CHEZ IMMA</p><h2 id="form-title">Créer un compte</h2>
+ <p class="muted" id="form-subtitle">Rejoignez la communauté en quelques étapes.</p>
+ <form id="auth-form">
+  <label id="name-wrap">Nom d'utilisateur<input id="username" minlength="3" maxlength="24" placeholder="Ex. ImmaRose"></label>
+  <label>Adresse e-mail<input id="email" type="email" required autocomplete="email" placeholder="vous@exemple.com"></label>
+  <label>Mot de passe<input id="password" type="password" required minlength="8" autocomplete="current-password" placeholder="8 caractères minimum"></label>
+  <label id="confirm-wrap">Confirmer le mot de passe<input id="confirm-password" type="password" minlength="8"></label>
+  <label id="age-wrap" class="check"><input id="age-check" type="checkbox"> Je confirme avoir 18 ans ou plus.</label>
+  <label id="rules-wrap" class="check"><input id="rules-check" type="checkbox"> J'accepte les règles de respect et de consentement.</label>
+  <button class="btn btn-primary full" id="submit-auth">Créer mon compte</button>
+  <p class="switch" id="form-switch">Déjà membre ? <button type="button" id="switch-mode">Se connecter</button></p>
+  <p id="notice" class="notice" role="status"></p>
+ </form>
+</section>
 
-  <section id="member-area" class="member-area hidden">
-    <div class="member-head"><div><p class="eyebrow">ESPACE PERSONNEL</p><h2 id="member-title">Bienvenue</h2></div><button class="btn btn-ghost" id="logout">Déconnexion</button></div>
-    <div id="member-content" class="member-card"></div>
-  </section>
+<section id="member-area" class="member-area hidden">
+ <div class="member-header"><div><p class="eyebrow">ESPACE PERSONNEL</p><h2 id="member-title">Bienvenue</h2></div><span id="role-badge" class="badge">MEMBRE</span></div>
+ <div id="status-card" class="status-card"></div>
+ <section id="admin-panel" class="admin-panel hidden">
+  <div class="section-heading"><div><p class="eyebrow">GESTION DE LA COMMUNAUTÉ</p><h2>Administration</h2></div><button class="btn btn-outline" id="refresh-users">Actualiser</button></div>
+  <div class="stats"><div><strong id="pending-count">0</strong><span>En attente</span></div><div><strong id="approved-count">0</strong><span>Approuvés</span></div><div><strong id="rejected-count">0</strong><span>Refusés</span></div></div>
+  <div id="users-list" class="users-list"><p class="muted">Chargement des membres…</p></div>
+ </section>
+</section>
 
-  <section class="features">
-    <article><span>♡</span><h3>Rencontres</h3><p>Faites connaissance à votre rythme.</p></article>
-    <article><span>✉</span><h3>Messagerie</h3><p>Un espace d'échange privé à venir.</p></article>
-    <article><span>✧</span><h3>Communauté</h3><p>Des interactions dans le respect.</p></article>
-    <article><span>♧</span><h3>Espace couple</h3><p>Des idées complices pour adultes.</p></article>
-  </section>
-
-  <section class="safety">
-    <div><p class="eyebrow">NOS ENGAGEMENTS</p><h2>La confiance n'est pas une option.</h2></div>
-    <ul><li>Validation des nouveaux comptes avant l'accès communautaire.</li><li>Consentement obligatoire pour tout contenu intime.</li><li>Interdiction du partage d'images privées sans autorisation.</li><li>Blocage et signalement à intégrer avant le lancement public.</li></ul>
-  </section>
+<section class="values">
+ <article><span>♡</span><h3>Rencontres</h3><p>Faites connaissance à votre rythme.</p></article>
+ <article><span>✉</span><h3>Messagerie</h3><p>Un espace d'échange privé à venir.</p></article>
+ <article><span>✧</span><h3>Communauté</h3><p>Des interactions dans le respect.</p></article>
+ <article><span>♧</span><h3>Espace couple</h3><p>Des idées complices pour adultes.</p></article>
+</section>
+<section class="safety"><div><p class="eyebrow">NOS ENGAGEMENTS</p><h2>La confiance n'est pas une option.</h2></div><ul><li>Validation des nouveaux comptes.</li><li>Consentement obligatoire pour les contenus intimes.</li><li>Interdiction de diffuser des images privées sans autorisation.</li><li>Signalement et blocage à intégrer avant le lancement public.</li></ul></section>
 </main>
 <footer><span>© 2026 IMMA PRIVÉ</span><span>Respect · Consentement · Confidentialité</span></footer>
 <script type="module" src="app.js"></script>
-</body>
-</html>
+</body></html>

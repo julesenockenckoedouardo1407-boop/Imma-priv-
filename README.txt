@@ -1,49 +1,32 @@
-IMMA PRIVÉ — VERSION 2 : AUTHENTIFICATION FIREBASE
+IMMA PRIVÉ — VERSION 3 : TABLEAU DE BORD ADMINISTRATEUR
 
-Cette version ajoute le branchement Firebase Authentication et Firestore.
-Elle n'est pas encore un réseau social complet : pas encore de chat, rencontres,
-publications, médias ni panneau d'administration graphique.
+NOUVEAUTÉS
+- Détection du rôle administrateur via le custom claim Firebase admin=true.
+- Tableau de bord admin.
+- Liste des membres, compteur par statut.
+- Actions approuver, refuser et remettre en attente.
+- Règles Firestore restrictives : un membre ordinaire ne peut pas changer son statut.
 
-ÉTAPE 1 — CRÉER FIREBASE
-1. Ouvrir https://console.firebase.google.com/
-2. Créer un projet nommé par exemple imma-prive.
-3. Ajouter une application Web (icône </>).
-4. Copier la configuration Firebase affichée.
-5. Ouvrir firebase-config.js et remplacer chaque valeur REMPLACER par la valeur fournie.
+CONFIGURATION
+1. Créez votre projet sur https://console.firebase.google.com/
+2. Activez Authentication > Email/Password.
+3. Créez Firestore Database.
+4. Copiez la configuration Web dans firebase-config.js.
+5. Publiez firestore.rules dans Firestore > Rules.
+6. Hébergez le dossier en HTTPS (Firebase Hosting ou GitHub Pages) et ajoutez le domaine aux domaines autorisés Firebase.
 
-ÉTAPE 2 — ACTIVER LES COMPTES
-1. Dans Firebase, ouvrir Authentication > Sign-in method.
-2. Activer Email/Password.
-3. Ouvrir Firestore Database et créer la base de données.
-4. Dans l'onglet Rules, publier le contenu de firestore.rules.
+CRÉER LE PREMIER ADMINISTRATEUR — ACTION SERVEUR REQUISE
+L'interface ne permet volontairement PAS de se promouvoir administrateur.
+Un développeur ou une personne de confiance doit utiliser Firebase Admin SDK depuis un environnement sécurisé
+(par exemple Cloud Functions / serveur privé) pour attribuer le custom claim admin=true au compte de direction.
+Exemple conceptuel côté serveur Node.js, à exécuter uniquement dans un environnement de confiance :
+  await getAuth().setCustomUserClaims(uid, { admin: true });
+Ne mettez jamais le code Admin SDK ni une clé de service dans le site web ou dans GitHub.
+Après attribution, déconnectez/reconnectez le compte administrateur.
 
-ÉTAPE 3 — APPROUVER UN MEMBRE
-Les nouveaux comptes sont créés avec status = "pending".
-Pour approuver un membre, l'administrateur doit être authentifié avec un compte
-ayant le custom claim admin=true, puis modifier le document users/{uid} :
-status : "approved".
-Pour refuser : status : "rejected".
-
-IMPORTANT : ne donnez jamais le rôle admin à un utilisateur depuis le navigateur.
-Le custom claim admin doit être défini côté serveur par un environnement de confiance
-(par exemple Firebase Admin SDK dans une fonction Cloud sécurisée).
-La version actuelle ne contient pas encore d'interface admin.
-
-ÉTAPE 4 — TESTER
-Les modules JavaScript chargés depuis Firebase ne fonctionnent pas correctement
-en ouvrant simplement index.html en fichier local. Hébergez le dossier via un
-serveur HTTPS (Firebase Hosting, GitHub Pages ou autre hébergement statique).
-N'oubliez pas d'ajouter le domaine d'hébergement dans Firebase Authentication
-> Settings > Authorized domains.
-
-SÉCURITÉ
-- Les règles Firestore sont un point de départ restrictif, pas un audit de sécurité.
-- Le contrôle de l'âge par case à cocher n'est pas une vérification d'âge robuste.
-  Avant un lancement public, ajouter une méthode de vérification adaptée au pays
-  et aux obligations légales.
-- Prévoir politique de confidentialité, suppression de compte, modération,
-  signalement, blocage et procédure de traitement des abus.
-- Ne pas stocker de mots de passe dans Firestore.
-- Ne pas publier de clés privées ni de comptes de service.
-- Ne jamais garantir qu'une capture d'écran est impossible.
-- Les photos et vidéos ne sont pas activées dans cette version.
+IMPORTANT
+- Cette version ne comprend pas encore de messagerie, rencontres, publications, téléversement d'images ou modération de contenu.
+- Les règles proposées doivent être testées et revues avant un lancement public.
+- La case 18+ n'est pas une vérification d'âge robuste. Ajoutez un mécanisme adapté aux lois applicables avant ouverture au public.
+- Prévoyez suppression de compte, gestion des données personnelles, signalement, blocage et politique de confidentialité.
+- N'hébergez pas de contenus intimes sans consentement explicite et procédure de modération.

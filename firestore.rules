@@ -8,8 +8,7 @@ service cloud.firestore {
     match /users/{uid} {
       allow create: if isOwner(uid)
         && request.resource.data.keys().hasOnly([
-          'username', 'email', 'status', 'role',
-          'adultConfirmed', 'rulesAccepted', 'createdAt'
+          'username','email','status','role','adultConfirmed','rulesAccepted','createdAt'
         ])
         && request.resource.data.username is string
         && request.resource.data.username.size() >= 3
@@ -18,15 +17,13 @@ service cloud.firestore {
         && request.resource.data.role == 'member'
         && request.resource.data.adultConfirmed == true
         && request.resource.data.rulesAccepted == true;
-
       allow read: if isOwner(uid) || isAdmin();
-      // L'utilisateur ne peut modifier ni son statut ni son rôle.
-      allow update: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status','reviewedAt','reviewedBy'])
+        && request.resource.data.status in ['pending','approved','rejected'];
       allow delete: if isAdmin() || isOwner(uid);
     }
-
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    match /{document=**} { allow read, write: if false; }
   }
 }
